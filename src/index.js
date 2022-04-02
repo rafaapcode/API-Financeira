@@ -15,12 +15,18 @@ app.post("/account", (req, res) => {
     // Sempre que estamos tratando de inserção de dados, recebemos REQUEST.BODY.
     const { cpf, name } = req.body;
 
-    const id = uuiddv4();
+    // Estamos usando o SOME, pois ele nos retorna um resultado BOOLEANO.
+    const customerAlreadyExist = customers.some(costumer => costumer.cpf === cpf);
 
+    if(customerAlreadyExist){
+        return res.status(400).json({ error: "Customer already exists!" });
+    }
+
+    
     customers.push({
         cpf,
         name,
-        id,
+        id: uuiddv4(),
         statement: []
     });
 
