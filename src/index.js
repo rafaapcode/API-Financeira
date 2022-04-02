@@ -1,8 +1,37 @@
 const express = require('express');
 const app = express();
 
+const { v4: uuiddv4 } = require("uuid");
+
+const customers = [];
+
+
+// falando para o Express que vamos receber um JSON
+app.use(express.json());
+
+// Criando o cadastro de compras
+app.post("/account", (req, res) => {
+
+    // Sempre que estamos tratando de inserção de dados, recebemos REQUEST.BODY.
+    const { cpf, name } = req.body;
+
+    const id = uuiddv4();
+
+    customers.push({
+        cpf,
+        name,
+        id,
+        statement: []
+    });
+
+    return res.status(201).send();
+
+})
+
+
+
 app.listen(3333, (err) => {
-    if(err){throw err;}
+    if (err) { throw err; }
 
     console.log("Server Running on Port: 3333");
 });
