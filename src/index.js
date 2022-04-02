@@ -18,11 +18,11 @@ app.post("/account", (req, res) => {
     // Estamos usando o SOME, pois ele nos retorna um resultado BOOLEANO.
     const customerAlreadyExist = customers.some(costumer => costumer.cpf === cpf);
 
-    if(customerAlreadyExist){
+    if (customerAlreadyExist) {
         return res.status(400).json({ error: "Customer already exists!" });
     }
 
-    
+
     customers.push({
         cpf,
         name,
@@ -33,6 +33,21 @@ app.post("/account", (req, res) => {
     return res.status(201).send();
 
 })
+
+
+app.get("/statement", (req, res) => {
+    const { cpf } = req.headers;
+
+    const costumer = customers.find(customer => customer.cpf === cpf);
+
+    if (!costumer) {
+        return res.status(400).json({ error: "Customer not found." })
+    }
+
+    return res.json(costumer.statement);
+
+})
+
 
 
 
