@@ -6,6 +6,24 @@ const { v4: uuiddv4 } = require("uuid");
 const customers = [];
 
 
+// Middleware
+function verifyExistAccountCPF(req, res, next) {
+    const { cpf } = req.headers;
+
+    const customer = customers.find(customer => customer.cpf === cpf);
+
+    if (!customer) {
+        return res.status(400).json({ error: "Customer not found." })
+    }
+
+    // Repassando a informação CUSTOMER para as outras rotas que estão utilizando o nosso MIDDLEWARE.
+    req.customer = customer;
+
+    return next();
+
+}
+
+
 // falando para o Express que vamos receber um JSON
 app.use(express.json());
 
@@ -16,7 +34,7 @@ app.post("/account", (req, res) => {
     const { cpf, name } = req.body;
 
     // Estamos usando o SOME, pois ele nos retorna um resultado BOOLEANO.
-    const customerAlreadyExist = customers.some(costumer => costumer.cpf === cpf);
+    const customerAlreadyExist = customers.some(customer => customer.cpf === cpf);
 
     if (customerAlreadyExist) {
         return res.status(400).json({ error: "Customer already exists!" });
@@ -35,17 +53,11 @@ app.post("/account", (req, res) => {
 })
 
 
-app.get("/statement", (req, res) => {
-    const { cpf } = req.headers;
+app.get("/statement", verifyExistAccountCPF, (req, res) => {
 
-    const costumer = customers.find(customer => customer.cpf === cpf);
+    const { customer } = req;
 
-    if (!costumer) {
-        return res.status(400).json({ error: "Customer not found." })
-    }
-
-    return res.json(costumer.statement);
-
+    return res.json(customer.statement);
 })
 
 
