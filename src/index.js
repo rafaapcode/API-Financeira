@@ -52,7 +52,7 @@ app.post("/account", (req, res) => {
 
 })
 
-
+// Buscando informações
 app.get("/statement", verifyExistAccountCPF, (req, res) => {
 
     const { customer } = req;
