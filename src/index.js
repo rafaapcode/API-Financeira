@@ -24,10 +24,10 @@ function verifyExistAccountCPF(req, res, next) {
 }
 
 function getBalance(statement) {
-    const balance = statement.reduce((acc, operation) => { 
-        if(operation.type === "credit"){
+    const balance = statement.reduce((acc, operation) => {
+        if (operation.type === "credit") {
             return acc + operation.amount
-        }else{
+        } else {
             return acc - operation.amount
         }
     }, 0);
@@ -97,8 +97,8 @@ app.post("/withdraw", verifyExistAccountCPF, (req, res) => {
 
     const balance = getBalance(customer.statement);
 
-    if(balance < amount){
-        return res.status(400).json({ error: "Insufficient funds!"})
+    if (balance < amount) {
+        return res.status(400).json({ error: "Insufficient funds!" })
     }
 
     const depositOperation = {
@@ -110,6 +110,21 @@ app.post("/withdraw", verifyExistAccountCPF, (req, res) => {
     customer.statement.push(depositOperation);
 
     return res.status(201).send();
+})
+
+// Buscando informações por DATA
+app.get("/statement/date", verifyExistAccountCPF, (req, res) => {
+    const { customer } = req;
+    const { date } = req.query;
+
+    const dateFormat = new Date(date);
+
+    const statement = customer.statement.filter((statement) => {
+        statement.created_at.toDateString() === new Date(dateFormat).toDateString();
+    })
+
+
+    return res.json(statement);
 })
 
 
